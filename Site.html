@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Анимация подарка</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #fff5f5;
+      margin: 0;
+      overflow: hidden;
+    }
+    .gift-box {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      background-color: #e74c3c;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    .lid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 120px;
+      height: 30px;
+      background-color: #c0392b;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      transform-origin: top center;
+      transition: transform 0.5s ease;
+      z-index: 2;
+    }
+    .gift-box.open .lid {
+      transform: rotateX(100deg);
+    }
+    .ribbon {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 120px;
+      background-color: #f1c40f;
+      z-index: 1;
+    }
+    .ribbon::before {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: -55px;
+      width: 120px;
+      height: 10px;
+      background-color: #f1c40f;
+    }
+    .confetti {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: red;
+      opacity: 0;
+      animation: explode 2s ease-out forwards;
+    }
+    @keyframes explode {
+      0% {
+        transform: translate(0, 0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--x), var(--y));
+        opacity: 0;
+      }
+    }
+    .video-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.6s ease;
+      z-index: 3;
+    }
+    .video-wrapper.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    video {
+      width: 300px;
+      height: 200px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="gift-box" onclick="openGift(this)">
+    <div class="lid"></div>
+    <div class="ribbon"></div>
+  </div>
+  <div id="videoWrapper" class="video-wrapper">
+    <video id="surpriseVideo" controls autoplay muted>
+      <source src="https://archive.org/download/rick-roll/Rick%20Roll.mp4" type="video/mp4">
+      Ваш браузер не поддерживает воспроизведение видео.
+    </video>
+  </div>
+
+  <script>
+    function openGift(box) {
+      box.classList.toggle('open');
+      const videoWrapper = document.getElementById('videoWrapper');
+      const video = document.getElementById('surpriseVideo');
+
+      if (box.classList.contains('open')) {
+        for (let i = 0; i < 50; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+          confetti.style.left = `${box.offsetLeft + 60}px`;
+          confetti.style.top = `${box.offsetTop + 30}px`;
+
+          const angle = Math.random() * 2 * Math.PI;
+          const distance = Math.random() * 300 + 100;
+          const x = Math.cos(angle) * distance;
+          const y = Math.sin(angle) * distance;
+
+          confetti.style.setProperty('--x', `${x}px`);
+          confetti.style.setProperty('--y', `${y}px`);
+
+          confetti.style.animationDuration = `${Math.random() * 1 + 1.5}s`;
+          confetti.style.animationDelay = `${Math.random()}s`;
+
+          document.body.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 3000);
+        }
+
+        videoWrapper.classList.add('show');
+        video.currentTime = 0;
+        video.play();
+      } else {
+        videoWrapper.classList.remove('show');
+        video.pause();
+      }
+    }
+  </script>
+</body>
+</html>
